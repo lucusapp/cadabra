@@ -1,0 +1,114 @@
+{
+  "name": "Product",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "short_description": {
+      "type": "string"
+    },
+    "image": {
+      "type": "string"
+    },
+    "gallery": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "business_id": {
+      "type": "string"
+    },
+    "category": {
+      "type": "string",
+      "description": "Categor\u00eda del producto dentro del comercio"
+    },
+    "price": {
+      "type": "number"
+    },
+    "original_price": {
+      "type": "number",
+      "description": "Precio sin descuento"
+    },
+    "is_reservable": {
+      "type": "boolean",
+      "default": false,
+      "description": "Producto con reserva anticipada"
+    },
+    "reservation_config": {
+      "type": "object",
+      "properties": {
+        "requires_payment": {
+          "type": "boolean"
+        },
+        "payment_type": {
+          "type": "string",
+          "enum": [
+            "full",
+            "deposit"
+          ]
+        },
+        "deposit_amount": {
+          "type": "number"
+        },
+        "available_from": {
+          "type": "string",
+          "format": "date"
+        },
+        "available_until": {
+          "type": "string",
+          "format": "date"
+        },
+        "pickup_slots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": {
+                "type": "string",
+                "format": "date"
+              },
+              "time_slots": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "max_per_slot": {
+                "type": "number"
+              }
+            }
+          }
+        }
+      }
+    },
+    "points_reward": {
+      "type": "number",
+      "default": 10,
+      "description": "Puntos por compra"
+    },
+    "stock": {
+      "type": "number"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "business_id",
+    "price"
+  ]
+}

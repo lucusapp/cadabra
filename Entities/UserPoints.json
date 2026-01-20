@@ -1,0 +1,49 @@
+{
+  "name": "UserPoints",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "total_points": {
+      "type": "number",
+      "default": 0
+    },
+    "available_points": {
+      "type": "number",
+      "default": 0
+    },
+    "lifetime_points": {
+      "type": "number",
+      "default": 0
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "bronze"
+    },
+    "articles_read": {
+      "type": "number",
+      "default": 0
+    },
+    "reservations_made": {
+      "type": "number",
+      "default": 0
+    },
+    "orders_completed": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "user_id"
+  ]
+}

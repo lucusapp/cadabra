@@ -1,0 +1,23 @@
+{
+  "name": "ArticleRead",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "article_id": {
+      "type": "string"
+    },
+    "points_earned": {
+      "type": "number"
+    },
+    "read_duration": {
+      "type": "number",
+      "description": "Segundos de lectura"
+    }
+  },
+  "required": [
+    "user_id",
+    "article_id"
+  ]
+}

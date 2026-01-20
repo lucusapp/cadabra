@@ -1,0 +1,75 @@
+{
+  "name": "Reward",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "image": {
+      "type": "string"
+    },
+    "points_cost": {
+      "type": "number"
+    },
+    "reward_type": {
+      "type": "string",
+      "enum": [
+        "discount",
+        "free_product",
+        "experience",
+        "voucher"
+      ]
+    },
+    "value": {
+      "type": "number",
+      "description": "Valor en euros del descuento/producto"
+    },
+    "business_id": {
+      "type": "string",
+      "description": "Comercio espec\u00edfico o null para general"
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "terms": {
+      "type": "string"
+    },
+    "valid_from": {
+      "type": "string",
+      "format": "date"
+    },
+    "valid_until": {
+      "type": "string",
+      "format": "date"
+    },
+    "max_redemptions": {
+      "type": "number"
+    },
+    "current_redemptions": {
+      "type": "number",
+      "default": 0
+    },
+    "min_level": {
+      "type": "string",
+      "enum": [
+        "bronze",
+        "silver",
+        "gold",
+        "platinum"
+      ],
+      "default": "bronze"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "points_cost",
+    "reward_type"
+  ]
+}

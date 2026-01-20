@@ -1,0 +1,128 @@
+{
+  "name": "Business",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nombre del comercio"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "short_description": {
+      "type": "string",
+      "description": "Descripci\u00f3n corta para tarjetas"
+    },
+    "logo": {
+      "type": "string"
+    },
+    "cover_image": {
+      "type": "string"
+    },
+    "category_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Categor\u00edas del comercio"
+    },
+    "address": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string",
+      "default": "Lugo"
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "opening_hours": {
+      "type": "object",
+      "description": "Horarios por d\u00eda"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "lat": {
+          "type": "number"
+        },
+        "lng": {
+          "type": "number"
+        }
+      }
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Caracter\u00edsticas: wifi, parking, etc."
+    },
+    "accepts_reservations": {
+      "type": "boolean",
+      "default": false
+    },
+    "accepts_orders": {
+      "type": "boolean",
+      "default": false
+    },
+    "delivery_options": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "pickup",
+          "delivery",
+          "ubereats",
+          "glovo"
+        ]
+      }
+    },
+    "external_links": {
+      "type": "object",
+      "properties": {
+        "ubereats": {
+          "type": "string"
+        },
+        "glovo": {
+          "type": "string"
+        },
+        "instagram": {
+          "type": "string"
+        },
+        "facebook": {
+          "type": "string"
+        }
+      }
+    },
+    "rating": {
+      "type": "number",
+      "default": 0
+    },
+    "reviews_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_verified": {
+      "type": "boolean",
+      "default": false
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "slug"
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "name": "Reservation",
+  "type": "object",
+  "properties": {
+    "code": {
+      "type": "string",
+      "description": "C\u00f3digo \u00fanico de reserva"
+    },
+    "user_id": {
+      "type": "string"
+    },
+    "user_email": {
+      "type": "string"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "user_phone": {
+      "type": "string"
+    },
+    "business_id": {
+      "type": "string"
+    },
+    "business_name": {
+      "type": "string"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "quantity": {
+      "type": "number",
+      "default": 1
+    },
+    "pickup_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "pickup_time_slot": {
+      "type": "string"
+    },
+    "total_amount": {
+      "type": "number"
+    },
+    "deposit_amount": {
+      "type": "number"
+    },
+    "payment_status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "paid",
+        "refunded",
+        "failed"
+      ],
+      "default": "pending"
+    },
+    "payment_id": {
+      "type": "string",
+      "description": "ID de Stripe"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "ready",
+        "completed",
+        "cancelled"
+      ],
+      "default": "pending"
+    },
+    "points_earned": {
+      "type": "number",
+      "default": 0
+    },
+    "notes": {
+      "type": "string"
+    },
+    "qr_code": {
+      "type": "string",
+      "description": "URL del QR generado"
+    },
+    "validated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "validated_by": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "business_id",
+    "product_id",
+    "pickup_date"
+  ]
+}

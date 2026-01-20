@@ -1,0 +1,64 @@
+{
+  "name": "PointsTransaction",
+  "type": "object",
+  "properties": {
+    "user_id": {
+      "type": "string"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "earn",
+        "redeem",
+        "expire",
+        "bonus",
+        "refund"
+      ]
+    },
+    "action": {
+      "type": "string",
+      "enum": [
+        "article_read",
+        "reservation",
+        "order",
+        "review",
+        "referral",
+        "reward_redemption",
+        "promotion",
+        "welcome_bonus"
+      ]
+    },
+    "points": {
+      "type": "number",
+      "description": "Positivo para ganar, negativo para gastar"
+    },
+    "description": {
+      "type": "string"
+    },
+    "reference_type": {
+      "type": "string",
+      "enum": [
+        "article",
+        "reservation",
+        "order",
+        "reward",
+        "business"
+      ]
+    },
+    "reference_id": {
+      "type": "string"
+    },
+    "business_id": {
+      "type": "string"
+    },
+    "business_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "user_id",
+    "type",
+    "action",
+    "points"
+  ]
+}
