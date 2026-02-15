@@ -28,7 +28,7 @@ export default function AdminUsers() {
     base44.auth.me()
       .then(u => {
         if (u.role !== 'admin' || (u.admin_permissions && !u.admin_permissions.includes('users'))) {
-          window.location.href = createPageUrl('AdminDashboard');
+          window.location.href = createPageUrl('AdminPanel');
           return;
         }
         setUser(u);
@@ -75,7 +75,7 @@ export default function AdminUsers() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link to={createPageUrl('AdminDashboard')}>
+            <Link to={createPageUrl('AdminPanel')}>
               <Button variant="ghost" size="icon">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
@@ -343,6 +343,7 @@ function UserDetailView({ user, userPoints, onClose }) {
                 </div>
               ))}
             </div>
+            
           </CardContent>
         </Card>
       )}

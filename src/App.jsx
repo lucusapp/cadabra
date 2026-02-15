@@ -1,8 +1,9 @@
 import { Routes, Route } from "react-router-dom";
-import Layout from "./legacy/Layout";
-import Home from "./legacy/Pages/Home";
-import Profile from "./legacy/Pages/Profile";
+import Home from "@/pages/Home"
+import Profile from "@/pages/Profile"
 import Article from '@/pages/Article'
+import Layout from "@/components/layout"
+
 
 
 

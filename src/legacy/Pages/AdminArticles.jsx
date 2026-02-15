@@ -28,7 +28,7 @@ export default function AdminArticles() {
     base44.auth.me()
       .then(u => {
         if (u.role !== 'admin' || (u.admin_permissions && !u.admin_permissions.includes('articles'))) {
-          window.location.href = createPageUrl('AdminDashboard');
+          window.location.href = createPageUrl('AdminPanel');
           return;
         }
         setUser(u);
@@ -78,7 +78,7 @@ export default function AdminArticles() {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-4">
-            <Link to={createPageUrl('AdminDashboard')}>
+            <Link to={createPageUrl('AdminPanel')}>
               <Button variant="ghost" size="icon">
                 <ArrowLeft className="w-5 h-5" />
               </Button>
@@ -409,13 +409,22 @@ function CreateFromURL({ categories, onClose }) {
   const [formData, setFormData] = useState({
     url: '',
     category_id: '',
-    description: ''
+    description: '',
+    instructions: ''
   });
+  const [generatedArticle, setGeneratedArticle] = useState(null);
   const [generating, setGenerating] = useState(false);
+  const [saving, setSaving] = useState(false);
   const queryClient = useQueryClient();
 
-  const handleSubmit = async (e) => {
+  const handleGenerate = async (e) => {
     e.preventDefault();
+    
+    if (!formData.category_id) {
+      toast.error('Selecciona una categoría');
+      return;
+    }
+
     setGenerating(true);
 
     try {
@@ -424,13 +433,14 @@ function CreateFromURL({ categories, onClose }) {
 
 ${formData.description ? `Contexto: ${formData.description}` : ''}
 
-Extrae:
+${formData.instructions ? `Instrucciones de redacción: ${formData.instructions}` : ''}
+
+Extrae y crea un artículo completo:
 - title: título del contenido
-- excerpt: resumen corto
-- content: resumen en markdown
-- cover_image: URL de imagen
-- source_name: nombre del sitio
-- read_time: minutos`,
+- excerpt: resumen corto (1-2 líneas)
+- content: contenido resumido en markdown (mínimo 200 palabras)
+- source_name: nombre del sitio web
+- read_time: minutos estimados de lectura`,
         add_context_from_internet: true,
         response_json_schema: {
           type: 'object',
@@ -438,86 +448,219 @@ Extrae:
             title: { type: 'string' },
             excerpt: { type: 'string' },
             content: { type: 'string' },
-            cover_image: { type: 'string' },
             source_name: { type: 'string' },
             read_time: { type: 'number' }
           }
         }
       });
 
-      await base44.entities.Article.create({
+      // Generar imagen automáticamente
+      const { url: generatedImageUrl } = await base44.integrations.Core.GenerateImage({
+        prompt: `Imagen ilustrativa para un artículo sobre: ${result.title}. Estilo periodístico profesional.`
+      });
+
+      setGeneratedArticle({
         ...result,
+        cover_image: generatedImageUrl
+      });
+      toast.success('Artículo e imagen generados, revisa y edita si es necesario');
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error('Error al procesar URL: ' + (error.message || 'Error desconocido'));
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await base44.entities.Article.create({
+        ...generatedArticle,
         category_id: formData.category_id,
         source_type: 'web',
         source_url: formData.url,
         is_published: true,
-        slug: result.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+        slug: generatedArticle.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')
       });
 
       queryClient.invalidateQueries(['admin-articles']);
       toast.success('Artículo creado desde URL');
       onClose();
     } catch (error) {
-      toast.error('Error al procesar URL');
+      toast.error('Error al guardar artículo');
     } finally {
-      setGenerating(false);
+      setSaving(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <Label>URL del artículo</Label>
-        <Input
-          type="url"
-          value={formData.url}
-          onChange={(e) => setFormData({ ...formData, url: e.target.value })}
-          placeholder="https://ejemplo.com/noticia"
-          required
-        />
-      </div>
+    <div className="space-y-4">
+      {!generatedArticle ? (
+        <form onSubmit={handleGenerate} className="space-y-4">
+          <div>
+            <Label>URL del artículo</Label>
+            <Input
+              type="url"
+              value={formData.url}
+              onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+              placeholder="https://ejemplo.com/noticia"
+              required
+            />
+          </div>
 
-      <div>
-        <Label>Contexto adicional (opcional)</Label>
-        <Textarea
-          value={formData.description}
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-          placeholder="Añade contexto..."
-          rows={3}
-        />
-      </div>
+          <div>
+            <Label>Categoría</Label>
+            <Select
+              value={formData.category_id}
+              onValueChange={(value) => setFormData({ ...formData, category_id: value })}
+              required
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Selecciona categoría" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((cat) => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-      <div>
-        <Label>Categoría</Label>
-        <Select
-          value={formData.category_id}
-          onValueChange={(value) => setFormData({ ...formData, category_id: value })}
-          required
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Selecciona categoría" />
-          </SelectTrigger>
-          <SelectContent>
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+          <div>
+            <Label>Instrucciones de redacción (opcional)</Label>
+            <Textarea
+              value={formData.instructions}
+              onChange={(e) => setFormData({ ...formData, instructions: e.target.value })}
+              placeholder="Ej: Redacta en tono informal, enfócate en los beneficios para la comunidad local..."
+              rows={3}
+            />
+          </div>
 
-      <Button type="submit" disabled={generating} className="w-full">
-        {generating ? (
-          <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Extrayendo...
-          </>
-        ) : (
-          <>
-            <LinkIcon className="w-4 h-4 mr-2" />
-            Crear Artículo
-          </>
-        )}
-      </Button>
-    </form>
+          <div>
+            <Label>Contexto adicional (opcional)</Label>
+            <Textarea
+              value={formData.description}
+              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+              placeholder="Añade contexto..."
+              rows={2}
+            />
+          </div>
+
+          <Button type="submit" disabled={generating} className="w-full">
+            {generating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Generando artículo...
+              </>
+            ) : (
+              <>
+                <Wand2 className="w-4 h-4 mr-2" />
+                Generar Artículo
+              </>
+            )}
+          </Button>
+        </form>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-semibold text-slate-900">Edita el artículo generado</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setGeneratedArticle(null)}
+            >
+              Regenerar
+            </Button>
+          </div>
+
+          <div>
+            <Label>Título</Label>
+            <Input
+              value={generatedArticle.title}
+              onChange={(e) => setGeneratedArticle({ ...generatedArticle, title: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <Label>Resumen</Label>
+            <Textarea
+              value={generatedArticle.excerpt}
+              onChange={(e) => setGeneratedArticle({ ...generatedArticle, excerpt: e.target.value })}
+              rows={2}
+            />
+          </div>
+
+          <div>
+            <Label>Contenido (Markdown)</Label>
+            <Textarea
+              value={generatedArticle.content}
+              onChange={(e) => setGeneratedArticle({ ...generatedArticle, content: e.target.value })}
+              rows={10}
+              className="font-mono text-sm"
+            />
+          </div>
+
+          <div>
+            <Label>URL de imagen</Label>
+            <Input
+              value={generatedArticle.cover_image || ''}
+              onChange={(e) => setGeneratedArticle({ ...generatedArticle, cover_image: e.target.value })}
+              placeholder="https://images.unsplash.com/..."
+            />
+          </div>
+
+          {generatedArticle.cover_image && (
+            <img 
+              src={generatedArticle.cover_image} 
+              alt="Preview"
+              className="w-full h-48 object-cover rounded-lg"
+            />
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Fuente</Label>
+              <Input
+                value={generatedArticle.source_name || ''}
+                onChange={(e) => setGeneratedArticle({ ...generatedArticle, source_name: e.target.value })}
+              />
+            </div>
+            <div>
+              <Label>Tiempo de lectura (min)</Label>
+              <Input
+                type="number"
+                value={generatedArticle.read_time || 5}
+                onChange={(e) => setGeneratedArticle({ ...generatedArticle, read_time: parseInt(e.target.value) })}
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setGeneratedArticle(null)}
+              className="flex-1"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex-1 bg-green-600 hover:bg-green-700"
+            >
+              {saving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Guardando...
+                </>
+              ) : (
+                'Guardar Artículo'
+              )}
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
